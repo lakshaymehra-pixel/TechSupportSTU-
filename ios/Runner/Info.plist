@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Salary Topup</string>
+	<string>TejasLoan</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>SalaryTopup</string>
+	<string>tejasloan</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -30,91 +30,43 @@
 				<string>fbAPP-ID</string>
 			</array>
 		</dict>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>razorpay</string>
-			</array>
-		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-
-	<!-- Queried URL Schemes for UPI/Payment Apps -->
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>phonepe</string>
 		<string>paytm</string>
 		<string>tez</string>
-		<string>gpay</string>
-		<string>upi</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-
-	<!-- Camera Permission -->
 	<key>NSCameraUsageDescription</key>
-	<string>Salary Topup needs camera access to capture documents required for your loan application (KYC verification).</string>
-
-	<!-- Photo Library Permission -->
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Salary Topup needs photo library access to upload documents required for your loan application (KYC verification).</string>
-
-	<!-- Photo Library Add Permission -->
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Salary Topup needs permission to save documents to your photo library.</string>
-
-	<!-- Location Permission -->
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Salary Topup uses your location to verify your address and comply with RBI guidelines for loan processing.</string>
-
+	<string>We need access to your photo library to upload and share photos within the app.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Salary Topup uses your location to verify your address and comply with RBI guidelines for loan processing.</string>
-
-	<!-- Face ID Permission -->
-	<key>NSFaceIDUsageDescription</key>
-	<string>Salary Topup uses Face ID for secure and quick login to your account.</string>
-
-	<!-- Microphone (if needed for video KYC) -->
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Salary Topup needs microphone access for video KYC verification process.</string>
-
-	<!-- Contacts (if applicable) -->
-	<!-- <key>NSContactsUsageDescription</key> -->
-	<!-- <string>Salary Topup needs contacts access for emergency contact verification.</string> -->
-
-	<!-- App Transport Security -->
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-	</dict>
-
-	<!-- Firebase / Push Notifications -->
-	<key>FirebaseAppDelegateProxyEnabled</key>
-	<false/>
-
-	<!-- UI Settings -->
+	<string>Your app needs access to the location always and while using the app.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Your app needs access to the location while using the app.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to upload and share photos within the app.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-
-	<!-- Portrait only for loan app (Apple policy recommends) -->
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-
-	<!-- ITSAppUsesNonExemptEncryption - Set false if no custom encryption -->
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 </dict>
 </plist>
