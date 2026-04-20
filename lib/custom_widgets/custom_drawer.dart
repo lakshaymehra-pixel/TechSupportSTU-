@@ -309,7 +309,7 @@ class CustomDrawer extends StatelessWidget {
   }
 
   Widget _createDrawerItem({
-    required IconData icon,
+    required dynamic icon,
     required String text,
     required GestureTapCallback onTap,
     required bool active,

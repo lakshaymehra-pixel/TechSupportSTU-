@@ -14,7 +14,8 @@ class LocalNotificationService {
         InitializationSettings(android: AndroidInitializationSettings("@mipmap/ic_launcher"));
     if (GetPlatform.isAndroid) {
       _notificationsPlugin.initialize(
-        initializationSettings,
+        settings: initializationSettings,
+        onDidReceiveNotificationResponse: (details) {},
       );
     }
   }
@@ -50,11 +51,10 @@ class LocalNotificationService {
         }
         // print('Notification :==> ${message.notification!.android!.toMap()}\nid:==> ${id}');
         await _notificationsPlugin.show(
-          id,
-          message.notification?.title,
-          message.notification?.body,
-          notificationDetails,
-          // payload: message.notification?.android?.imageUrl.toString(),
+          id: id,
+          title: message.notification?.title,
+          body: message.notification?.body,
+          notificationDetails: notificationDetails,
         );
       }
     } on Exception catch (e) {

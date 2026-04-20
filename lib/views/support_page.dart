@@ -42,7 +42,7 @@ class SupportPage extends StatelessWidget {
             _buildDivider(
               context: context,
               icon: Icon(
-                FontAwesomeIcons.phone,
+                Icons.phone,
                 size: 24.sp,
                 color: Theme.of(context).primaryColor,
               ),
@@ -60,7 +60,7 @@ class SupportPage extends StatelessWidget {
             _buildDivider(
               context: context,
               icon: Icon(
-                FontAwesomeIcons.whatsapp,
+                Icons.chat,
                 size: 25.sp,
                 color: Theme.of(context).primaryColor,
               ),
@@ -127,7 +127,7 @@ class SupportPage extends StatelessWidget {
               context: context,
               icon: Icon(
                 size: 25.sp,
-                FontAwesomeIcons.link,
+                Icons.link,
                 color: Theme.of(context).primaryColor,
               ),
               title: 'Website',
