@@ -36,8 +36,13 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.salarytopup.salarytopup"
-    compileSdk 35
-    ndkVersion flutter.ndkVersion
+    // 36 because the fluttertoast plugin compiles against it. This only affects
+    // which APIs are available at compile time and is backward compatible;
+    // targetSdkVersion below stays at 35, so runtime behaviour is unchanged.
+    compileSdk 36
+    // No NDK line: this project has no native C/C++ sources, and its plugins
+    // ship prebuilt .so files. Declaring ndkVersion forces a ~1 GB NDK download
+    // that nothing here actually uses.
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -50,6 +55,10 @@ android {
         applicationId "com.salarytopup.salarytopup"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
+        // Pinned to 21 on purpose so the app stays installable on Android 5.0+.
+        // Do not replace with flutter.minSdkVersion (currently 24) — that would
+        // cut off existing users on older devices. Firebase is held at
+        // core 3.x / messaging 15.x in pubspec.yaml for the same reason.
         minSdkVersion 21
         targetSdkVersion 35
         versionCode 10
@@ -90,17 +99,23 @@ flutter {
     source '../..'
 }
 dependencies {
-    // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:32.3.1')
+    // Import the Firebase BoM. 33.x matches the native SDK that firebase_core
+    // 3.15.x pulls in; under the old 32.x pin, firebase-analytics-ktx resolved
+    // to a blank version and the build failed.
+    implementation platform('com.google.firebase:firebase-bom:33.7.0')
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
-    implementation 'com.google.firebase:firebase-analytics-ktx'
+    //
+    // firebase-analytics-ktx is not listed: the Kotlin extensions were folded
+    // into the main firebase-analytics artifact, so recent BoMs no longer
+    // publish a -ktx version and the dependency resolves to a blank version.
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")
     implementation('com.appsflyer:af-android-sdk:6.8.0')  // Use the latest version
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+    // 2.1.4+ is required by flutter_local_notifications.
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
 
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries

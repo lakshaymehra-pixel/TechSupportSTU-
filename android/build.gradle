@@ -4,11 +4,11 @@
     repositories {
         google()
         mavenCentral()
-        jcenter() //here
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.3.0'
+        // AGP itself is declared in settings.gradle's plugins block; declaring it
+        // here too would conflict with that version.
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.gms:google-services:4.3.13'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
@@ -29,6 +29,47 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(':app')
+}
+
+// Compatibility shim for plugins written before AGP 8.
+//
+// AGP 8 removed the `package` attribute from a library's AndroidManifest and
+// requires `namespace` in its build.gradle instead. Plugins that were last
+// published before that change (e.g. lean_file_picker 0.0.2, built against
+// AGP 4.1) fail to configure with "Namespace not specified".
+//
+// Rather than pinning the whole project back to AGP 7, read the package out of
+// each such plugin's manifest and set it as the namespace. Plugins that already
+// declare a namespace are left untouched. Their very old compileSdk is also
+// raised to the app's, since AGP 8 will not build against SDK 30 any more.
+// Registered on plugin application rather than in afterEvaluate: the
+// evaluationDependsOn(':app') above means subprojects are already evaluated by
+// the time an afterEvaluate hook would run.
+subprojects { subproject ->
+    subproject.plugins.withId('com.android.library') {
+        def androidExt = subproject.extensions.findByName('android')
+        if (androidExt == null) return
+
+        if (androidExt.namespace == null) {
+            def manifest = subproject.file('src/main/AndroidManifest.xml')
+            if (manifest.exists()) {
+                def pkg = new groovy.xml.XmlSlurper(false, false)
+                        .parse(manifest)
+                        .@package
+                        .text()
+                if (pkg) {
+                    androidExt.namespace = pkg
+                    subproject.logger.lifecycle(
+                            "Set namespace '${pkg}' for legacy plugin ':${subproject.name}'")
+                }
+            }
+        }
+
+        def current = androidExt.compileSdkVersion?.replaceAll(/\D/, '')
+        if (!current || current.toInteger() < 34) {
+            androidExt.compileSdkVersion 36
+        }
+    }
 }
 
 tasks.register("clean", Delete) {

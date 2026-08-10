@@ -36,6 +36,8 @@
 **/android/gradlew.bat
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.*
+**/android/app/.cxx/
+**/ios/Flutter/ephemeral/
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
