@@ -112,18 +112,21 @@ workflows:
           pod install --repo-update
 
       - name: Check the Firebase iOS config matches the bundle id
-        # GoogleService-Info.plist shipped with BUNDLE_ID com.raghavi.suryaloan,
-        # left over from another app. Push notifications and Crashlytics on iOS
-        # stay broken until it is regenerated for this bundle id, so surface it
-        # rather than shipping a build that silently has no push.
+        # A mismatched plist does not fail the build — it just leaves the app
+        # with no push and no Crashlytics — so check it explicitly.
+        # iOS points at the salarytopup-884b2 project; Android still points at
+        # suryaloan-e961a, deliberately, because switching it would reset FCM
+        # tokens for every existing install.
         script: |
+          set -e
           PLIST=ios/Runner/GoogleService-Info.plist
           FOUND=$(plutil -extract BUNDLE_ID raw "$PLIST" 2>/dev/null || echo "missing")
           echo "GoogleService-Info.plist BUNDLE_ID: $FOUND"
           if [ "$FOUND" != "$BUNDLE_ID" ]; then
-            echo "WARNING: expected $BUNDLE_ID."
+            echo "ERROR: expected $BUNDLE_ID."
             echo "Download a fresh GoogleService-Info.plist for this bundle id from"
-            echo "the Firebase console (project suryaloan-e961a) and replace the file."
+            echo "the Firebase console (project salarytopup-884b2)."
+            exit 1
           fi
 
       - name: Build IPA
