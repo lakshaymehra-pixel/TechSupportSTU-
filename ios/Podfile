@@ -30,6 +30,12 @@ flutter_ios_podfile_setup
 target 'Runner' do
   use_frameworks!
 
+  # hl_image_picker_ios 1.2.10 depends on 'CropViewController' with no version
+  # constraint, so CocoaPods resolves the newest release. 2.7 renamed the API the
+  # plugin calls (customAspectRatio, presetSquare, preset16x9 …), which fails to
+  # compile. Hold it on the 2.6 line the plugin was written against.
+  pod 'CropViewController', '~> 2.6.0'
+
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
     inherit! :search_paths
