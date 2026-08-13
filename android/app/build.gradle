@@ -36,13 +36,11 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.salarytopup.salarytopup"
-    // 36 because the fluttertoast plugin compiles against it. This only affects
-    // which APIs are available at compile time and is backward compatible;
-    // targetSdkVersion below stays at 35, so runtime behaviour is unchanged.
     compileSdk 36
     // No NDK line: this project has no native C/C++ sources, and its plugins
     // ship prebuilt .so files. Declaring ndkVersion forces a ~1 GB NDK download
     // that nothing here actually uses.
+
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -60,9 +58,19 @@ android {
         // cut off existing users on older devices. Firebase is held at
         // core 3.x / messaging 15.x in pubspec.yaml for the same reason.
         minSdkVersion 21
-        targetSdkVersion 35
-        versionCode 10
-        versionName '1.1.7'
+        // Google Play requires API 36 for updates published after 31 Aug 2026.
+        // Targeting 36 also makes edge-to-edge mandatory, which is handled by
+        // the app-level SafeArea builder in lib/main.dart.
+        targetSdkVersion 36
+        versionCode 13
+        versionName '1.2.0'
+
+        // Ship the native symbol table inside the bundle. Without it Play warns
+        // that debug symbols are missing, and native crashes in Crashlytics stay
+        // as raw addresses instead of resolved frames.
+        ndk {
+            debugSymbolLevel 'SYMBOL_TABLE'
+        }
     }
 
     signingConfigs {
@@ -70,7 +78,10 @@ android {
             if (keystorePropertiesFile.exists()) {
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
-                storeFile file(keystoreProperties['storeFile'])
+                // Resolved against android/ (where key.properties and the
+                // keystore live), not android/app/ — file() alone would look
+                // relative to this module.
+                storeFile rootProject.file(keystoreProperties['storeFile'])
                 storePassword keystoreProperties['storePassword']
             }
         }

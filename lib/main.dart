@@ -33,9 +33,17 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
 
+  // Draw behind the system bars. On Android 15+ this is enforced anyway, and
+  // statusBarColor is ignored there, so the bars are made transparent and the
+  // icons set to dark to stay legible against the app's light background.
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle.light.copyWith(
-      statusBarColor: Colors.grey.withOpacity(0.5),
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
   prefs = await SharedPreferences.getInstance();
@@ -84,6 +92,16 @@ class MyApp extends StatelessWidget {
           home: SplashScreen(),
           initialBinding: ControllerBinding(),
           getPages: GetPages().routes,
+          // Applied once here rather than screen by screen. Targeting Android
+          // 16 (API 36) makes edge-to-edge mandatory, so without this the
+          // status bar and navigation bar would overlap page content on every
+          // route. Wrapping at the app level keeps each screen's own layout
+          // untouched — it only insets the whole page away from the system bars.
+          builder: (context, child) => SafeArea(
+            top: true,
+            bottom: true,
+            child: child ?? const SizedBox.shrink(),
+          ),
         );
     });
   }

@@ -27,10 +27,6 @@ rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
-subprojects {
-    project.evaluationDependsOn(':app')
-}
-
 // Compatibility shim for plugins written before AGP 8.
 //
 // AGP 8 removed the `package` attribute from a library's AndroidManifest and
@@ -46,7 +42,7 @@ subprojects {
 // evaluationDependsOn(':app') above means subprojects are already evaluated by
 // the time an afterEvaluate hook would run.
 subprojects { subproject ->
-    subproject.plugins.withId('com.android.library') {
+    subproject.afterEvaluate {
         def androidExt = subproject.extensions.findByName('android')
         if (androidExt == null) return
 
@@ -59,24 +55,33 @@ subprojects { subproject ->
                         .text()
                 if (pkg) {
                     androidExt.namespace = pkg
-                    subproject.logger.lifecycle(
-                            "Set namespace '${pkg}' for legacy plugin ':${subproject.name}'")
                 }
             }
         }
 
+        // Raise the compile SDK of plugins that still target very old versions.
+        // lean_file_picker declares 30, where android:attr/lStar does not exist,
+        // so its resource linking fails against current androidx.
         def current = androidExt.compileSdkVersion?.replaceAll(/\D/, '')
-        if (!current || current.toInteger() < 34) {
+        if (!current || current.toInteger() < 35) {
             androidExt.compileSdkVersion 36
+            subproject.logger.lifecycle(
+                    "Raised compileSdk to 36 for ':${subproject.name}' (was ${current ?: 'unset'})")
         }
     }
+}
+
+// Registered after the shim above: evaluationDependsOn forces subprojects to
+// evaluate immediately, so any afterEvaluate hook declared later would never fire.
+subprojects {
+    project.evaluationDependsOn(':app')
 }
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
-configurations.all {
-    resolutionStrategy {
-        force 'androidx.core:core-ktx:1.7.0'
-    }
-}
+// The old `force 'androidx.core:core-ktx:1.7.0'` was removed. Pinning core-ktx
+// that far back also drags androidx.core itself back, and resource linking then
+// fails with "resource android:attr/lStar not found" because attributes the
+// current plugins reference only exist in newer androidx.core. Gradle picks the
+// highest requested version on its own, which is what these plugins expect.

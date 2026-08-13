@@ -1,0 +1,148 @@
+# Codemagic CI/CD for SalaryTopUp
+#
+# Flutter is pinned to 3.29.3 on purpose. The project's plugin set does not
+# build on current Flutter: lean_file_picker 0.0.2 predates AGP 8, and
+# fluttertoast/geolocator_android ask for compileSdk 36. android/build.gradle
+# carries a shim for the first; the pin keeps the rest reproducible. Raising
+# this is a migration, not a version bump — see the notes in android/build.gradle.
+#
+# Signing is taken from Codemagic's own stores, never from files in the repo:
+#   - Android: Code signing identities -> Android keystores  (reference: stu_upload_key)
+#   - iOS:     Code signing identities -> iOS certificates   (needs an Apple Developer account)
+
+definitions:
+  flutter_version: &flutter_version 3.29.3
+
+  android_signing: &android_signing
+    android_signing:
+      - stu_upload_key
+
+workflows:
+  android-release:
+    name: Android release (AAB + APK)
+    max_build_duration: 90
+    instance_type: linux_x2
+    environment:
+      flutter: *flutter_version
+      java: 17
+      <<: *android_signing
+      vars:
+        # Bumped per build so Play never sees a repeated versionCode.
+        PACKAGE_NAME: com.salarytopup.salarytopup
+    scripts:
+      - name: Flutter version in use
+        script: flutter --version
+
+      - name: Get packages
+        script: flutter pub get
+
+      - name: Static analysis
+        # Informational only: the project has pre-existing lint findings, so a
+        # non-zero exit here must not fail the build.
+        script: flutter analyze --no-fatal-infos --no-fatal-warnings || true
+
+      - name: Build AAB
+        script: flutter build appbundle --release
+
+      - name: Build APK
+        # Useful for manual testing; Play only consumes the AAB.
+        script: flutter build apk --release
+
+      - name: Verify the bundle is signed with the upload key
+        # A debug-signed bundle uploads fine and is then rejected by Play, so
+        # fail here instead where the reason is obvious.
+        script: |
+          set -e
+          AAB=build/app/outputs/bundle/release/app-release.aab
+          OWNER=$(keytool -printcert -jarfile "$AAB" | grep -m1 'Owner:')
+          echo "$OWNER"
+          echo "$OWNER" | grep -q 'CN=SalaryTopUp' || {
+            echo "ERROR: bundle is not signed with the SalaryTopUp upload key."
+            exit 1
+          }
+    artifacts:
+      - build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/mapping/release/mapping.txt
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - social.marketing@salarytopup.com
+        notify:
+          success: true
+          failure: true
+      # Uncomment once a Google Play service account JSON is added to Codemagic.
+      # Start on `internal` — this app's release path has not been exercised on
+      # a real device through CI yet.
+      #
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: internal
+      #   submit_as_draft: true
+
+  ios-release:
+    name: iOS release (IPA)
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    environment:
+      flutter: *flutter_version
+      xcode: latest
+      cocoapods: default
+      vars:
+        BUNDLE_ID: com.salarytopup.salarytopup
+      # Requires an Apple Developer Program membership. Add the integration in
+      # Codemagic (Teams -> Integrations -> Developer Portal) and set the name
+      # here, then uncomment:
+      #
+      # ios_signing:
+      #   distribution_type: app_store
+      #   bundle_identifier: com.salarytopup.salarytopup
+      #
+      # app_store_connect:
+      #   auth: integration
+    scripts:
+      - name: Get packages
+        script: flutter pub get
+
+      - name: Install pods
+        script: |
+          set -e
+          cd ios
+          pod install --repo-update
+
+      - name: Check the Firebase iOS config matches the bundle id
+        # GoogleService-Info.plist shipped with BUNDLE_ID com.raghavi.suryaloan,
+        # left over from another app. Push notifications and Crashlytics on iOS
+        # stay broken until it is regenerated for this bundle id, so surface it
+        # rather than shipping a build that silently has no push.
+        script: |
+          PLIST=ios/Runner/GoogleService-Info.plist
+          FOUND=$(plutil -extract BUNDLE_ID raw "$PLIST" 2>/dev/null || echo "missing")
+          echo "GoogleService-Info.plist BUNDLE_ID: $FOUND"
+          if [ "$FOUND" != "$BUNDLE_ID" ]; then
+            echo "WARNING: expected $BUNDLE_ID."
+            echo "Download a fresh GoogleService-Info.plist for this bundle id from"
+            echo "the Firebase console (project suryaloan-e961a) and replace the file."
+          fi
+
+      - name: Build IPA
+        # --no-codesign until the signing block above is filled in; without a
+        # certificate an archive build would fail outright.
+        script: flutter build ios --release --no-codesign
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - build/ios/iphoneos/*.app
+    publishing:
+      email:
+        recipients:
+          - social.marketing@salarytopup.com
+        notify:
+          success: true
+          failure: true
+      # Uncomment once ios_signing and app_store_connect are configured.
+      #
+      # app_store_connect:
+      #   auth: integration
+      #   submit_to_testflight: true

@@ -54,6 +54,15 @@
     @android.webkit.JavascriptInterface <methods>;
 }
 
+# SMS User Consent API, used by pinput/smart_auth for OTP autofill. The
+# consent sheet is delivered through a broadcast receiver resolved by name, so
+# R8 cannot see the usage and would strip it — autofill then fails silently
+# rather than crashing.
+-keep class com.google.android.gms.auth.api.phone.** { *; }
+-dontwarn com.google.android.gms.auth.api.phone.**
+-keep class fman.ge.smart_auth.** { *; }
+-dontwarn fman.ge.smart_auth.**
+
 # Annotation-driven keep markers used by several SDKs
 -keep @androidx.annotation.Keep class * { *; }
 -keepclassmembers class * {

@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:smart_auth/smart_auth.dart';
 import 'package:tejas_loan/controller/loging_controller.dart';
 import 'package:tejas_loan/custom_widgets/custom_button.dart';
 import 'package:tejas_loan/routes/routes_names.dart';
@@ -13,8 +14,34 @@ import 'package:timer_count_down/timer_count_down.dart';
 import '../utils/color_constants.dart';
 import '../utils/image_constants.dart';
 
+/// Feeds [Pinput] the code from the incoming SMS.
+///
+/// Uses the SMS User Consent API, which shows the system's own one-tap sheet.
+/// That needs no SMS permission and no app-signature hash in the message body,
+/// so the existing OTP SMS template keeps working unchanged.
+class SmsRetrieverImpl implements SmsRetriever {
+  const SmsRetrieverImpl(this.smartAuth);
+
+  final SmartAuth smartAuth;
+
+  @override
+  bool get listenForMultipleSms => false;
+
+  @override
+  Future<void> dispose() => smartAuth.removeSmsListener();
+
+  @override
+  Future<String?> getSmsCode() async {
+    final res = await smartAuth.getSmsCode(useUserConsentApi: true);
+    if (res.succeed && res.codeFound) return res.code;
+    return null;
+  }
+}
+
 class OtpScreen extends GetView<LogingController> {
   OtpScreen({super.key});
+
+  final SmsRetrieverImpl _smsRetriever = SmsRetrieverImpl(SmartAuth());
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +122,11 @@ class OtpScreen extends GetView<LogingController> {
                     submittedPinTheme: submittedPinTheme,
                     pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
                     showCursor: true,
+                    // Reads the OTP out of the incoming SMS instead of relying on
+                    // the keyboard's suggestion strip. Pinput 5 dropped the old
+                    // androidSmsAutofillMethod handling, so the retriever is
+                    // supplied explicitly — see SmsRetrieverImpl below.
+                    smsRetriever: _smsRetriever,
                     onCompleted: (pin) {
                       controller.OTP.value = pin;
                     },
