@@ -38,6 +38,7 @@
 **/android/**/GeneratedPluginRegistrant.*
 **/android/app/.cxx/
 **/ios/Flutter/ephemeral/
+**/output-metadata.json
 
 # iOS/XCode related
 **/ios/**/*.mode1v3

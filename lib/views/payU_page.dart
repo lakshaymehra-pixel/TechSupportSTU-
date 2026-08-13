@@ -144,13 +144,13 @@
 //   //Find the test credentials from dev guide: https://devguide.payu.in/flutter-sdk-integration/getting-started-flutter-sdk/mobile-sdk-test-environment/
 //   static const merchantKey = "Ttbv1z"; // Add you Merchant Key
 //   static const iosSurl =
-//       "https://api.suryaloan.co.in/Api/CustomerDetails/payUPaymentCheckout";
+//       "https://salarytopup.in/api/CustomerDetails/payUPaymentCheckout";
 //   static const iosFurl =
-//       "https://api.suryaloan.co.in/Api/CustomerDetails/payUPaymentCheckout";
+//       "https://salarytopup.in/api/CustomerDetails/payUPaymentCheckout";
 //   static const androidSurl =
-//       "https://api.suryaloan.co.in/Api/CustomerDetails/payUPaymentCheckout";
+//       "https://salarytopup.in/api/CustomerDetails/payUPaymentCheckout";
 //   static const androidFurl =
-//       "https://api.suryaloan.co.in/Api/CustomerDetails/payUPaymentCheckout";
+//       "https://salarytopup.in/api/CustomerDetails/payUPaymentCheckout";
 //
 //   static const merchantAccessKey = ""; //Add Merchant Access Key - Optional
 //   static const sodexoSourceId = ""; //Add sodexo Source Id - Optional

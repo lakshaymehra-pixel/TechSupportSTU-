@@ -198,7 +198,7 @@
 //   try {
 //     http.Response response = await http.post(
 //         Uri.parse(
-//             'http://api.crm.suryaloan.in/Api/DevicePrivacyController/updateLogs'),
+//             'https://salarytopup.in/api/DevicePrivacyController/updateLogs'),
 //         headers: headers,
 //         body: jsonEncode(periodicDataModel));
 //     // http.StreamedResponse response = await request.send();

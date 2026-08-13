@@ -45,7 +45,7 @@
             android:value="@integer/google_play_services_version" />
 <!--        <meta-data-->
 <!--            android:name="com.appsflyer.onelink.domain"-->
-<!--            android:value="suryaloan.onelink.me" />-->
+<!--            android:value="salarytopup.onelink.me" />-->
 <!--        <meta-data-->
 <!--            android:name="com.facebook.sdk.ApplicationId"-->
 <!--            android:value="@string/facebook_app_id" />-->
@@ -80,7 +80,7 @@
             android:value="2" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="SuryaLoan" />
+            android:value="Salarytopup" />
 
 
     </application>

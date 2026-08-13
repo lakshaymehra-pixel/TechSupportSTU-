@@ -90,7 +90,9 @@ class SharedConstants {
   //General Constant
  static const Company_Address = "Office No-101, First Floor,NN Mall, Mangalam Palace,Sector-3, Rohini Delhi-110085";
  static const Company_Name = "Baid Stock Broking Services Private Limited";
- static const Brand_Name = "Salarytopup ";
+ // No trailing space: this string is also used as the Android notification
+ // channel id, which must match the value in AndroidManifest.xml exactly.
+ static const Brand_Name = "Salarytopup";
  static const ARD_Package_Name = "com.salarytopup.salarytopup";
  static const IOS_App_Id = "";
  static const instagram = "https://www.instagram.com/salarytopup/";

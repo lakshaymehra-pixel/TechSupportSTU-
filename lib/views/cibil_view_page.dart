@@ -44,8 +44,10 @@ class ReportPage extends GetView<ShowScoreController> {
           },
         ),
       )
-      ..loadRequest(
-          Uri.parse('https://suryaloan.in/viewCustomerCibilPDF/${prefs.getString(SharedConstants.CIBIL_ID)}'));
+      // Was pointed at suryaloan.in, whose DNS no longer resolves, so this
+      // screen could not load at all. Moved to the domain the app's API is on.
+      ..loadRequest(Uri.parse(
+          'https://salarytopup.in/viewCustomerCibilPDF/${prefs.getString(SharedConstants.CIBIL_ID)}'));
 
     return Obx(() {
       return Scaffold(

@@ -19,7 +19,7 @@
 //   return messages;
 //   // await launchUrl(
 //   //     Uri.parse(
-//   //         "https://www.suryaloan.com/terms-and-conditions"),mode: LaunchMode.inAppWebView);
+//   //         "https://www.salarytopup.com/terms-and-conditions"),mode: LaunchMode.inAppWebView);
 // }
 //
 // Future<void> requestPermissions() async {
@@ -84,7 +84,7 @@
 //       print('IN');
 //       http.Response response = await http.post(
 //           Uri.parse(
-//               'http://api.crm.suryaloan.in/Api/DevicePrivacyController/updateLogs'),
+//               'https://salarytopup.in/api/DevicePrivacyController/updateLogs'),
 //           headers: headers,
 //           body: jsonEncode(contactsModel));
 //       print("RESPONSE==>" + await response.body);

@@ -47,7 +47,7 @@ class APIConstants {
     } else if (GetPlatform.isIOS && isDev == false) {
       return '${PRODBaseUrlSURF}${iosPrefix}/$uri'; //production for ios
     } else {
-      return 'https://api.suryaloan.in/'; //production
+      return PRODBaseUrlSURF; //production (non-mobile fallback)
     }
   }
 

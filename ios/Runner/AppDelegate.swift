@@ -18,7 +18,7 @@ import FirebaseCore
 //        		<key>appid</key>
 //        		<string>6503283983</string>
 //        		<key>com.appsflyer.onelink.domain</key>
-//        		<string>suryaloan.onelink.me</string>
+//        		<string>salarytopup.onelink.me</string>
 //        		<key>devkey</key>
 //        		<string>fupfvH2AJ3JwqVvW9z2747</string>
 //        	</dict>
@@ -31,7 +31,7 @@ import FirebaseCore
 // 	<key>FacebookClientToken</key>
 // 	<string>bac922d7dde23de7b2ed02d0443f7752</string>
 // 	<key>FacebookDisplayName</key>
-// 	<string>SuryaLoan</string>
+// 	<string>SalaryTopUp</string>
 // 	<key>FlutterDeepLinkingEnabled</key>
 // 	<true/>
       

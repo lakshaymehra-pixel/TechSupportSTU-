@@ -168,7 +168,7 @@ String? extractParameter(String referrer, String key) {
 // Future setupAppFlyer() async {
 //   Map<String, Object> appsFlyerOptions = {
 //     "afDevKey": "fupfvH2AJ3JwqVvW9z2747",
-//     "afAppId": Platform.isIOS ? "6503283983" : "com.suryaloan.suryaloan",
+//     "afAppId": Platform.isIOS ? SharedConstants.IOS_App_Id : SharedConstants.ARD_Package_Name,
 //   };
 //   debugPrint("onAppOpenAttribution data: ");
 //
@@ -251,7 +251,10 @@ checkVersion(BuildContext context) async {
                     onPressed: () {
                       Uri storeLink = Uri.parse('');
                       if (GetPlatform.isIOS) {
-                        storeLink = Uri.parse('https://apps.apple.com/in/app/suryaloan/id${SharedConstants.IOS_App_Id}');
+                        // IOS_App_Id is filled in once the app is live on the
+                        // App Store; the slug itself is cosmetic, the id routes.
+                        storeLink = Uri.parse(
+                            'https://apps.apple.com/in/app/salarytopup/id${SharedConstants.IOS_App_Id}');
                       } else {
                         storeLink =
                             Uri.parse('https://play.google.com/store/apps/details?id=${SharedConstants.ARD_Package_Name}');
