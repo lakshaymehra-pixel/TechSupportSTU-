@@ -39,5 +39,20 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+
+    target.build_configurations.each do |config|
+      # Build plugin pods in Swift 5 mode. Under Swift 6 the strict concurrency
+      # checks are errors, and razorpay_flutter 1.4.5 — the latest release —
+      # trips them ("Reference to var 'FlutterMethodNotImplemented' is not
+      # concurrency-safe"). Only the pods are affected; Runner itself stays on
+      # the Swift version set in the Xcode project.
+      config.build_settings['SWIFT_VERSION'] = '5.0'
+
+      # Some plugins still declare a deployment target below what the current
+      # toolchain accepts; the Podfile's platform line governs.
+      if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 14.0
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
+      end
+    end
   end
 end
